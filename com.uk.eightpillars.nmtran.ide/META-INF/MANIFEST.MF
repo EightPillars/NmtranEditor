@@ -11,5 +11,6 @@ Require-Bundle: com.uk.eightpillars.nmtran,
  org.antlr.runtime
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: com.uk.eightpillars.nmtran.ide.contentassist.antlr.internal,
- com.uk.eightpillars.nmtran.ide.contentassist.antlr
+ com.uk.eightpillars.nmtran.ide.contentassist.antlr,
+ com.uk.eightpillars.nmtran.ide.contentassist.antlr.lexer
 
