@@ -1,0 +1,173 @@
+//grammar com.uk.eightpillars.nmtran.NmTran with org.eclipse.xtext.common.Terminals
+//
+//generate nmTran "http://www.uk.com/eightpillars/nmtran/NmTran"
+
+grammar com.uk.eightpillars.nmtran.NmTran  hidden(SL_COMMENT,WS) 
+
+generate nmTran "http://www.uk.com/eightpillars/nmtran/NmTran"
+
+import "http://www.eclipse.org/emf/2002/Ecore" as ecore
+
+NmModel: {NmModel}
+	EOL*
+	header=NmHeaderBlock
+	blocks+=NmBlock*
+	;
+
+NmHeaderBlock: {NmHeaderBlock}
+		(stmts+=NmHdrStatements+ EOL+)+
+;
+
+NmHeader:  {NmHeader} '$PROBLEM'  probStmt=StringLiteral
+;
+
+//NmDataDefn: {NmDataDefn}
+//	header=NmInput EOL+
+//	data=NmDataSource EOL+
+//;
+
+NmHdrStatements:
+	NmInput|NmSubroutine|NmHeader|NmDataSource
+;
+
+NmInput:	{NmInput} '$INPUT' dataCols+=NmDataCol+ 
+	
+;
+
+NmDataCol:	{NmDataCol} name=ID ('=' colType=ID)?
+		;
+
+SymbolDefinition: NmDataCol|NmEquation;
+
+NmDataSource: {NmDataSource} '$DATA' dataFile=STRING options+=NmInputOptions*;
+
+
+NmInputOptions: {NmInputOptions} option='IGNORE' '=' optVal=('@'|'#') ;
+
+NmBlock: {NmBlock}
+			blockName=('$PRED'|'$PK'|'$MODEL'|'$ERROR'|'$THETA'|'$OMEGA'|'$SIGMA') EOL+
+			(eqns+=NmStatement EOL+)+
+;
+
+
+NmSubroutine:	{NmSubroutine} '$SUBS' ID options=NmSubroutineOptions
+			;
+
+NmSubroutineOptions:	{NmSubroutineOptions} option='TOL' '=' expr=Expression
+			;
+
+NmCompDefn:  {NmCompDefn} 'COMP' '(' cmpId=ID ')'
+			;
+
+//NmPKBlock:	{NmPK} '$PK'EOL+ (eqns+=NmStatement EOL+)+ //((thetas+=NmThetas|etas+=NmEtas|vars+=NmEquation) EOL+)+  
+//			;
+
+NmStatement:
+			NmEquation | NmCondStmt |NmCompDefn
+;
+
+NmEquation returns NmStatement:
+	{NmEquation} name=ID '=' rhs=Expression
+;
+
+Expression: OrExpression
+;
+
+OrExpression returns Expression:
+	AndExpression (=>({OrExpression.leftOperand=current} feature='.OR.') rightOperand=AndExpression)*;
+
+
+AndExpression returns Expression:
+	EqualityExpression (=>({AndExpression.leftOperand=current} feature='.AND.') rightOperand=EqualityExpression)*;
+
+
+EqualityExpression returns Expression:
+	RelationalExpression (=>({EqualityExpression.leftOperand=current} feature=('.EQ.' | '.NE.'))
+	rightOperand=RelationalExpression)*;
+
+
+RelationalExpression returns Expression:
+	AdditiveExpression
+	(
+	 =>({RelationalExpression.leftOperand=current} feature=('.GE.' | '.LE.' | '.GT.' | '.LT.')) rightOperand=AdditiveExpression)*;
+
+
+AdditiveExpression returns Expression:		
+					MultiplicativeExpression ({AdditiveExpression.lhs=current} opType=('+'|'-') rhs=MultiplicativeExpression)*
+;
+
+MultiplicativeExpression returns Expression:
+					PowerExpression ({MultiplicativeExpression.lhs=current} opType=('*'|'/') rhs=PowerExpression)*
+;
+
+
+PowerExpression returns Expression:
+					UnaryExpression ({PowerExpression.lhs=current} opType=('^') rhs=UnaryExpression)*
+;
+
+UnaryExpression returns Expression:
+	(opType = ('-'|'+'))? lhs=PrimaryExpression
+;
+
+PrimaryExpression returns Expression:
+		StringLiteral|
+		IntegerLiteral|
+		RealLiteral|
+		FunctionCall|
+		EtaLiteral|
+		ThetaLiteral|
+		SymbolReference|
+		Parenthesis
+;
+
+
+NmCondStmt returns NmStatement:
+	'IF' '(' condExpr=Expression ')' 'THEN' EOL+ (thenExprs+=NmStatement EOL+)+ (=>'ELSE' EOL+ (elseExprs+=NmStatement EOL+)+ )? 'ENDIF'
+;
+
+Parenthesis returns Expression: {Parenthesis} '(' expr=Expression ')';
+
+SymbolReference: {SymbolReference} ref=[SymbolDefinition];
+
+FunctionCall: {FunctionCall} fName=FNAME '(' args+=Expression (',' args+=Expression)* ')' ;
+
+EtaLiteral: {EtaLiteral} 'ETA' '(' etaId=IntegerLiteral ')';
+
+ThetaLiteral: {ThetaLiteral} 'THETA' '(' thetaId=IntegerLiteral ')';
+
+StringLiteral:	value=STRING
+	
+;
+
+IntegerLiteral:	value=INT
+	
+;
+
+
+RealLiteral: value = REAL
+	
+;
+
+EOL: NEWLINE;
+
+terminal FNAME: 'LOG'|'EXP';
+
+terminal SL_COMMENT:	';' !('\n'|'\r')*;
+
+terminal STRING:		'"' (!('"'|'\n'|'\r'))* '"';
+
+terminal ID :			(('a'..'z')|('A'..'Z')) (('a'..'z')|('A'..'Z')|('0'..'9')|'_')*;
+
+//terminal CHAR:			('a'..'z')|('A'..'Z')|('0'..'9')|'@'|'#'|'£';
+
+terminal INT returns ecore::EInt:
+					('0'..'9')+
+				;
+
+REAL:			INT '.' INT;
+
+terminal WS:			' '|'\t';
+
+terminal NEWLINE:		('\r'? '\n');
+
+//terminal BEGIN: 'synthetic:BEGIN';
