@@ -21,33 +21,23 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference NmTran.ecore#//NmInput/dataCols"/>
     </genClasses>
     <genClasses ecoreClass="NmTran.ecore#//NmDataCol">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute NmTran.ecore#//NmDataCol/name"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute NmTran.ecore#//NmDataCol/colType"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute NmTran.ecore#//NmDataCol/dataName"/>
     </genClasses>
-    <genClasses ecoreClass="NmTran.ecore#//SymbolDefinition"/>
-    <genClasses ecoreClass="NmTran.ecore#//NmDataSource">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute NmTran.ecore#//NmDataSource/dataFile"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference NmTran.ecore#//NmDataSource/options"/>
+    <genClasses ecoreClass="NmTran.ecore#//SymbolDefinition">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute NmTran.ecore#//SymbolDefinition/name"/>
     </genClasses>
-    <genClasses ecoreClass="NmTran.ecore#//NmInputOptions">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute NmTran.ecore#//NmInputOptions/option"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute NmTran.ecore#//NmInputOptions/optVal"/>
+    <genClasses ecoreClass="NmTran.ecore#//NmOption">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute NmTran.ecore#//NmOption/optName"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference NmTran.ecore#//NmOption/optVal"/>
     </genClasses>
     <genClasses ecoreClass="NmTran.ecore#//NmBlock">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute NmTran.ecore#//NmBlock/blockName"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference NmTran.ecore#//NmBlock/options"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference NmTran.ecore#//NmBlock/eqns"/>
     </genClasses>
-    <genClasses ecoreClass="NmTran.ecore#//NmSubroutine">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference NmTran.ecore#//NmSubroutine/options"/>
-    </genClasses>
-    <genClasses ecoreClass="NmTran.ecore#//NmSubroutineOptions">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute NmTran.ecore#//NmSubroutineOptions/option"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference NmTran.ecore#//NmSubroutineOptions/expr"/>
-    </genClasses>
-    <genClasses ecoreClass="NmTran.ecore#//NmCompDefn">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute NmTran.ecore#//NmCompDefn/cmpId"/>
-    </genClasses>
     <genClasses ecoreClass="NmTran.ecore#//NmStatement">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference NmTran.ecore#//NmStatement/initial"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute NmTran.ecore#//NmStatement/modifier"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference NmTran.ecore#//NmStatement/condExpr"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference NmTran.ecore#//NmStatement/thenExprs"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference NmTran.ecore#//NmStatement/elseExprs"/>
@@ -56,19 +46,7 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute NmTran.ecore#//Expression/opType"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference NmTran.ecore#//Expression/lhs"/>
     </genClasses>
-    <genClasses ecoreClass="NmTran.ecore#//SymbolReference">
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference NmTran.ecore#//SymbolReference/ref"/>
-    </genClasses>
-    <genClasses ecoreClass="NmTran.ecore#//FunctionCall">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute NmTran.ecore#//FunctionCall/fName"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference NmTran.ecore#//FunctionCall/args"/>
-    </genClasses>
-    <genClasses ecoreClass="NmTran.ecore#//EtaLiteral">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference NmTran.ecore#//EtaLiteral/etaId"/>
-    </genClasses>
-    <genClasses ecoreClass="NmTran.ecore#//ThetaLiteral">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference NmTran.ecore#//ThetaLiteral/thetaId"/>
-    </genClasses>
+    <genClasses ecoreClass="NmTran.ecore#//Expresson"/>
     <genClasses ecoreClass="NmTran.ecore#//StringLiteral">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute NmTran.ecore#//StringLiteral/value"/>
     </genClasses>
@@ -79,8 +57,19 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute NmTran.ecore#//RealLiteral/value"/>
     </genClasses>
     <genClasses ecoreClass="NmTran.ecore#//NmEquation">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute NmTran.ecore#//NmEquation/name"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference NmTran.ecore#//NmEquation/rhs"/>
+    </genClasses>
+    <genClasses ecoreClass="NmTran.ecore#//NmOdeInit">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference NmTran.ecore#//NmOdeInit/dvIdx"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference NmTran.ecore#//NmOdeInit/rhs"/>
+    </genClasses>
+    <genClasses ecoreClass="NmTran.ecore#//NmOdeDefn">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference NmTran.ecore#//NmOdeDefn/dvIdx"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference NmTran.ecore#//NmOdeDefn/rhs"/>
+    </genClasses>
+    <genClasses ecoreClass="NmTran.ecore#//NmLimit">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference NmTran.ecore#//NmLimit/upper"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference NmTran.ecore#//NmLimit/lower"/>
     </genClasses>
     <genClasses ecoreClass="NmTran.ecore#//OrExpression">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference NmTran.ecore#//OrExpression/leftOperand"/>
@@ -113,6 +102,23 @@
     </genClasses>
     <genClasses ecoreClass="NmTran.ecore#//Parenthesis">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference NmTran.ecore#//Parenthesis/expr"/>
+    </genClasses>
+    <genClasses ecoreClass="NmTran.ecore#//SymbolReference">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference NmTran.ecore#//SymbolReference/ref"/>
+    </genClasses>
+    <genClasses ecoreClass="NmTran.ecore#//ODERef">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference NmTran.ecore#//ODERef/dvIdx"/>
+    </genClasses>
+    <genClasses ecoreClass="NmTran.ecore#//FunctionCall">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute NmTran.ecore#//FunctionCall/fName"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference NmTran.ecore#//FunctionCall/args"/>
+    </genClasses>
+    <genClasses ecoreClass="NmTran.ecore#//SpecialVars">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute NmTran.ecore#//SpecialVars/varName"/>
+    </genClasses>
+    <genClasses ecoreClass="NmTran.ecore#//EtaLiteral">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute NmTran.ecore#//EtaLiteral/utilName"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference NmTran.ecore#//EtaLiteral/etaId"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>

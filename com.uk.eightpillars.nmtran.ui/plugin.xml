@@ -249,6 +249,54 @@
 		<super type="org.eclipse.xtext.ui.check.expensive"/>
 		<persistent value="true"/>
 	</extension>
+	<extension point="org.eclipse.xtext.builder.participant">
+		<participant
+			class="com.uk.eightpillars.nmtran.ui.NmTranExecutableExtensionFactory:org.eclipse.xtext.builder.IXtextBuilderParticipant"
+			fileExtensions="ctl"/>
+	</extension>
+	<extension point="org.eclipse.ui.preferencePages">
+		<page
+			category="com.uk.eightpillars.nmtran.NmTran"
+			class="com.uk.eightpillars.nmtran.ui.NmTranExecutableExtensionFactory:org.eclipse.xtext.builder.preferences.BuilderPreferencePage"
+			id="com.uk.eightpillars.nmtran.NmTran.compiler.preferencePage"
+			name="Compiler">
+			<keywordReference id="com.uk.eightpillars.nmtran.ui.keyword_NmTran"/>
+		</page>
+	</extension>
+	<extension point="org.eclipse.ui.propertyPages">
+		<page
+			category="com.uk.eightpillars.nmtran.NmTran"
+			class="com.uk.eightpillars.nmtran.ui.NmTranExecutableExtensionFactory:org.eclipse.xtext.builder.preferences.BuilderPreferencePage"
+			id="com.uk.eightpillars.nmtran.NmTran.compiler.propertyPage"
+			name="Compiler">
+			<keywordReference id="com.uk.eightpillars.nmtran.ui.keyword_NmTran"/>
+			<enabledWhen>
+				<adapt type="org.eclipse.core.resources.IProject"/>
+			</enabledWhen>
+			<filter name="projectNature" value="org.eclipse.xtext.ui.shared.xtextNature"/>
+		</page>
+	</extension>
+	<extension point="org.eclipse.ui.menus">
+		<menuContribution locationURI="popup:#TextEditorContext?after=xtext.ui.openDeclaration">
+			<command
+				commandId="org.eclipse.xtext.ui.OpenGeneratedFileCommand"
+				id="com.uk.eightpillars.nmtran.NmTran.OpenGeneratedCode"
+				style="push">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="com.uk.eightpillars.nmtran.NmTran.Editor.opened" />
+				</visibleWhen>
+			</command>
+		</menuContribution>
+	</extension>
+	<extension point="org.eclipse.ui.handlers">
+		<handler
+			class="com.uk.eightpillars.nmtran.ui.NmTranExecutableExtensionFactory:org.eclipse.xtext.ui.generator.trace.OpenGeneratedFileHandler"
+			commandId="org.eclipse.xtext.ui.OpenGeneratedFileCommand">
+			<activeWhen>
+				<reference definitionId="com.uk.eightpillars.nmtran.NmTran.Editor.opened" />
+			</activeWhen>
+		</handler>
+	</extension>
 	<!-- Quick Outline -->
 	<extension
 		point="org.eclipse.ui.handlers">

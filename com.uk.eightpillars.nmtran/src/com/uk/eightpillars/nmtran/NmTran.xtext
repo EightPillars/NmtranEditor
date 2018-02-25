@@ -27,48 +27,90 @@ NmHeader:  {NmHeader} '$PROBLEM'  probStmt=StringLiteral
 //;
 
 NmHdrStatements:
-	NmInput|NmSubroutine|NmHeader|NmDataSource
+	NmInput|NmHeader //|NmDataSource
 ;
 
 NmInput:	{NmInput} '$INPUT' dataCols+=NmDataCol+ 
-	
 ;
 
-NmDataCol:	{NmDataCol} name=ID ('=' colType=ID)?
+//NmDataCol:	{NmDataCol} name=DATA_NAME
+//		;
+
+NmDataCol:	{NmDataCol} name=ID '=' dataName=('DROP'|DATA_NAME)
+		|	dataName=DATA_NAME ('=' name=ID)
+		|	name=Identifier
 		;
 
-SymbolDefinition: NmDataCol|NmEquation;
+Identifier:	DATA_NAME | ID;
 
-NmDataSource: {NmDataSource} '$DATA' dataFile=STRING options+=NmInputOptions*;
+SymbolDefinition: NmDataCol |NmEquation | NmCompDefn
+				;
+
+//NmDataSource: {NmDataSource} '$DATA' dataFile=STRING options+=NmInputOptions*;
 
 
-NmInputOptions: {NmInputOptions} option='IGNORE' '=' optVal=('@'|'#') ;
+//NmInputOptions: {NmInputOptions} option='IGNORE' '=' optVal=('@'|'#') ;
 
-NmBlock: {NmBlock}
-			blockName=('$PRED'|'$PK'|'$MODEL'|'$ERROR'|'$THETA'|'$OMEGA'|'$SIGMA') EOL+
-			(eqns+=NmStatement EOL+)+
+NmOption:	optName=OPNKWD ('=' optVal=Expression)?
+			| optName=PARAM_OPN_KWD '(' optVal = Expression ')'
+			| optVal=StringLiteral
+			| optVal = SymbolReference
 ;
 
 
-NmSubroutine:	{NmSubroutine} '$SUBS' ID options=NmSubroutineOptions
-			;
+// Need to modify this so that a block can have an
+// $ID  {options}  all on same line
+// Followed by a body of expressions 
+NmBlock: {NmBlock}
+			blockName=('$PRED'|'$PK'|'$MODEL'|'$ERROR'|'$THETA'|'$OMEGA'|'$SIGMA'|'$DES'|'$EST'|'$TABLE'|'$SUBS'|'$DATA') options+=NmOption* EOL+
+//			blockName=(BLOCK_NAME) EOL+
+			(eqns+=NmStatement EOL+)*
+;
 
-NmSubroutineOptions:	{NmSubroutineOptions} option='TOL' '=' expr=Expression
-			;
 
-NmCompDefn:  {NmCompDefn} 'COMP' '(' cmpId=ID ')'
-			;
 
-//NmPKBlock:	{NmPK} '$PK'EOL+ (eqns+=NmStatement EOL+)+ //((thetas+=NmThetas|etas+=NmEtas|vars+=NmEquation) EOL+)+  
+//NmSubroutine:	{NmSubroutine} '$SUBS' ID options=NmSubroutineOptions
+//			;
+//
+//NmSubroutineOptions:	{NmSubroutineOptions} option='TOL' '=' expr=Expression
+//			;
+
+//NmCompDefn:  {NmCompDefn} 'COMP' '(' cmpId=ID ')'
 //			;
 
 NmStatement:
-			NmEquation | NmCondStmt |NmCompDefn
+			NmEquation | NmCondStmt |NmOdeInit | NmOdeDefn |NmLimit| NmCompDefn
 ;
 
 NmEquation returns NmStatement:
-	{NmEquation} name=ID '=' rhs=Expression
+	{NmEquation} name=ID ('=' rhs=Expression)?
 ;
+
+NmOdeInit returns NmStatement:
+	{NmOdeInit} 'A_0'  '(' dvIdx=IntegerLiteral ')' '=' rhs=Expression
+;
+
+NmOdeDefn returns NmStatement:
+	{NmOdeDefn} 'DADT'  '(' dvIdx=IntegerLiteral ')' '=' rhs=Expression
+;
+
+NmLimit returns NmStatement:
+	{NmLimit} ('(' initial=RealLiteral  modifier=RANGE_MODIFIER? (',' upper=RealLiteral (',' lower = RealLiteral)? )? ')') 
+			|   (initial=RealLiteral  modifier=RANGE_MODIFIER)
+;
+
+NmCompDefn returns NmStatement:
+	{NmStatement} 'COMP' '(' name=ID ')'
+; 
+
+
+//NmUtility returns NmStatment:
+//		{NmUtility} utilityName=('BLOCK'|'COMP') '(' utilityVal=Expression ')'
+//;
+
+//NmOption returns NmStatement:
+//		{NmOption} option=ADVANREF
+//;
 
 Expression: OrExpression
 ;
@@ -114,10 +156,14 @@ PrimaryExpression returns Expression:
 		IntegerLiteral|
 		RealLiteral|
 		FunctionCall|
-		EtaLiteral|
-		ThetaLiteral|
+		UtilityReference|
+//		EtaLiteral|
+//		EpsLiteral|
+//		ThetaLiteral|
 		SymbolReference|
-		Parenthesis
+		ODERef|
+		Parenthesis |
+		SpecialVars
 ;
 
 
@@ -127,13 +173,19 @@ NmCondStmt returns NmStatement:
 
 Parenthesis returns Expression: {Parenthesis} '(' expr=Expression ')';
 
-SymbolReference: {SymbolReference} ref=[SymbolDefinition];
+SymbolReference returns Expression: {SymbolReference} ref=[SymbolDefinition|Identifier];
 
-FunctionCall: {FunctionCall} fName=FNAME '(' args+=Expression (',' args+=Expression)* ')' ;
+ODERef returns Expresson: {ODERef}  'A' '(' dvIdx = IntegerLiteral ')' ;
 
-EtaLiteral: {EtaLiteral} 'ETA' '(' etaId=IntegerLiteral ')';
+FunctionCall returns Expression: {FunctionCall} fName=FNAME '(' args+=Expression (',' args+=Expression)* ')' ;
 
-ThetaLiteral: {ThetaLiteral} 'THETA' '(' thetaId=IntegerLiteral ')';
+SpecialVars returns Expression:	{SpecialVars}	varName=(IDV|IGNORE_CHARS|SAEM_VAL);
+
+UtilityReference returns Expression: {EtaLiteral} utilName=('ETA'|'EPS'|'THETA') '(' etaId=IntegerLiteral ')';
+
+//EpsLiteral returns Expression: {EtaLiteral} 'EPS' '(' etaId=IntegerLiteral ')';
+//
+//ThetaLiteral returns Expression: {ThetaLiteral} 'THETA' '(' thetaId=IntegerLiteral ')';
 
 StringLiteral:	value=STRING
 	
@@ -150,13 +202,41 @@ RealLiteral: value = REAL
 
 EOL: NEWLINE;
 
+//terminal BLOCK_NAME:	'$' ID;
+
 terminal FNAME: 'LOG'|'EXP';
+
+RANGE_MODIFIER:  'FIX'| 'SD';
+
+OPNKWD:		'IGNORE'|(ADVAN)|'CORRELATION' | 'SD' | 'TOL' | 'METHOD' | 'AUTO' | 'PRINT'|'NOAPPEND'|'NOPRINT'|'FILE';
+
+terminal ADVAN :			'ADVAN' ('0'..'9') ('0'..'9')?
+;
+
+terminal IDV	:	'T';
+
+terminal DATA_NAME: 'ID'|'TIME'|'RATE'|'AMT'|'DV'|'II'|'CMT'|'SS';
+
+terminal IGNORE_CHARS:	'@' | '#';
+
+terminal SAEM_VAL: 		'SAEM';
+
+//terminal COMPREF : 'COMP' ('0'..'9');
+
+terminal PARAM_OPN_KWD : 'BLOCK';
 
 terminal SL_COMMENT:	';' !('\n'|'\r')*;
 
 terminal STRING:		'"' (!('"'|'\n'|'\r'))* '"';
 
 terminal ID :			(('a'..'z')|('A'..'Z')) (('a'..'z')|('A'..'Z')|('0'..'9')|'_')*;
+
+//terminal fragment IS_BEGIN_A: ('A'|'a') (('a'..'z')|('A'..'Z')|(('0'..'9') ('a'..'z')|('A'..'Z')|('0'..'9')|'_')*)?;
+//
+//terminal fragment RAW_ID: (('b'..'z')|('B'..'Z')) (('a'..'z')|('A'..'Z')|('0'..'9')|'_')*;
+//
+//terminal ID:		IS_BEGIN_A | RAW_ID;
+
 
 //terminal CHAR:			('a'..'z')|('A'..'Z')|('0'..'9')|'@'|'#'|'£';
 
