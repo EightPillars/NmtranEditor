@@ -27,7 +27,7 @@ NmHeader:  {NmHeader} '$PROBLEM'  probStmt=StringLiteral
 //;
 
 NmHdrStatements:
-	NmInput|NmHeader //|NmDataSource
+	NmInput|NmHeader |NmDataSource
 ;
 
 NmInput:	{NmInput} '$INPUT' dataCols+=NmDataCol+ 
@@ -41,13 +41,14 @@ NmDataCol:	{NmDataCol} name=ID '=' dataName=('DROP'|DATA_NAME)
 		|	name=Identifier
 		;
 
-Identifier:	DATA_NAME | ID;
+Identifier:	=> DATA_NAME | ID;
 
 SymbolDefinition: NmDataCol |NmEquation | NmCompDefn
 				;
 
-//NmDataSource: {NmDataSource} '$DATA' dataFile=STRING options+=NmInputOptions*;
+NmDataSource: {NmDataSource} '$DATA' dataFile=NonQuoteString options+=NmOption*;
 
+NonQuoteString:	PATH | ID | STRING;
 
 //NmInputOptions: {NmInputOptions} option='IGNORE' '=' optVal=('@'|'#') ;
 
@@ -62,7 +63,7 @@ NmOption:	optName=OPNKWD ('=' optVal=Expression)?
 // $ID  {options}  all on same line
 // Followed by a body of expressions 
 NmBlock: {NmBlock}
-			blockName=('$PRED'|'$PK'|'$MODEL'|'$ERROR'|'$THETA'|'$OMEGA'|'$SIGMA'|'$DES'|'$EST'|'$TABLE'|'$SUBS'|'$DATA') options+=NmOption* EOL+
+			blockName=('$PRED'|'$PK'|'$MODEL'|'$ERROR'|'$THETA'|'$OMEGA'|'$SIGMA'|'$DES'|'$EST'|'$TABLE'|'$SUBS') options+=NmOption* EOL+
 //			blockName=(BLOCK_NAME) EOL+
 			(eqns+=NmStatement EOL+)*
 ;
@@ -238,16 +239,32 @@ terminal ID :			(('a'..'z')|('A'..'Z')) (('a'..'z')|('A'..'Z')|('0'..'9')|'_')*;
 //terminal ID:		IS_BEGIN_A | RAW_ID;
 
 
-//terminal CHAR:			('a'..'z')|('A'..'Z')|('0'..'9')|'@'|'#'|'£';
+//terminal fragment CHAR:			('a'..'z')|('A'..'Z')|('0'..'9')|'@'|'#'|'£'|'/'|'\\'|'.'|'_'|'-';
+
+terminal fragment NON_NUM_CHAR:			('a'..'z')|('A'..'Z')|'@'|'#'|'£'|'/'|'\\'|'.'|'_'|'-';
+//
+//terminal fragment DIGIT:			'0'..'9';
 
 terminal INT returns ecore::EInt:
 					('0'..'9')+
 				;
 
-REAL:			INT '.' INT;
+terminal REAL:			INT '.' INT;
 
-terminal WS:			' '|'\t';
+terminal fragment _WS:			' '|'\t';
 
-terminal NEWLINE:		('\r'? '\n');
+terminal fragment _NEWLINE:		('\r'? '\n');
+
+terminal WS:			_WS;
+
+terminal NEWLINE:		_NEWLINE;
+
+//terminal fragment ALL_SPACE: _WS|_NEWLINE;
+
+//terminal WS:			' '|'\t';
+//
+//terminal NEWLINE:		('\r'? '\n');
+
+terminal PATH:		!(' '|'\t'|'\r'|'\n')+; 
 
 //terminal BEGIN: 'synthetic:BEGIN';

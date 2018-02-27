@@ -26,6 +26,10 @@
     <genClasses ecoreClass="NmTran.ecore#//SymbolDefinition">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute NmTran.ecore#//SymbolDefinition/name"/>
     </genClasses>
+    <genClasses ecoreClass="NmTran.ecore#//NmDataSource">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute NmTran.ecore#//NmDataSource/dataFile"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference NmTran.ecore#//NmDataSource/options"/>
+    </genClasses>
     <genClasses ecoreClass="NmTran.ecore#//NmOption">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute NmTran.ecore#//NmOption/optName"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference NmTran.ecore#//NmOption/optVal"/>
