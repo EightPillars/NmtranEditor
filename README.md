@@ -8,8 +8,8 @@ The type of a token is determined not by a text pattern alone, but also by its c
 `$PROBLEM` block is treated as a string, and need not be surrounded in quotes, but unquoted text after the $PK block, for example,
 must be treated as the name of an identifier.
 
-I couldn't work out a way for XText to handle this without rewriting (and maintaining!) an alternate XText lexer
-- something I don't have the time to do.
+I couldn't work out a way for XText to handle this without rewriting 
+(and maintaining!) an alternate XText lexer - something I don't have the time to do.
 
 ## Code Status
 
